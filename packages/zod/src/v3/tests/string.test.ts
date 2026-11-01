@@ -641,7 +641,7 @@ test("datetime parsing", () => {
   datetimeOffset.parse("2020-10-14T17:42:29+03:15");
   datetimeOffset.parse("2020-10-14T17:42:29+0315");
   datetimeOffset.parse("2020-10-14T17:42+0315");
-  expect(() => datetimeOffset.parse("2020-10-14T17:42:29+03"));
+  expect(() => datetimeOffset.parse("2020-10-14T17:42:29+03")).toThrow();
   expect(() => datetimeOffset.parse("tuna")).toThrow();
   expect(() => datetimeOffset.parse("2022-10-13T09:52:31.Z")).toThrow();
 

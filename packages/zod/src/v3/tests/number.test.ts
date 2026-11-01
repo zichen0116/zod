@@ -100,15 +100,15 @@ test("parse NaN", () => {
 });
 
 test("min max getters", () => {
-  expect(z.number().minValue).toBeNull;
-  expect(ltFive.minValue).toBeNull;
-  expect(lteFive.minValue).toBeNull;
-  expect(maxFive.minValue).toBeNull;
-  expect(negative.minValue).toBeNull;
-  expect(nonpositive.minValue).toBeNull;
-  expect(intNum.minValue).toBeNull;
-  expect(multipleOfFive.minValue).toBeNull;
-  expect(finite.minValue).toBeNull;
+  expect(z.number().minValue).toBeNull();
+  expect(ltFive.minValue).toBeNull();
+  expect(lteFive.minValue).toBeNull();
+  expect(maxFive.minValue).toBeNull();
+  expect(negative.minValue).toBeNull();
+  expect(nonpositive.minValue).toBeNull();
+  expect(intNum.minValue).toBeNull();
+  expect(multipleOfFive.minValue).toBeNull();
+  expect(finite.minValue).toBeNull();
   expect(gtFive.minValue).toEqual(5);
   expect(gteFive.minValue).toEqual(5);
   expect(minFive.minValue).toEqual(5);
@@ -117,15 +117,15 @@ test("min max getters", () => {
   expect(nonnegative.minValue).toEqual(0);
   expect(safe.minValue).toEqual(Number.MIN_SAFE_INTEGER);
 
-  expect(z.number().maxValue).toBeNull;
-  expect(gtFive.maxValue).toBeNull;
-  expect(gteFive.maxValue).toBeNull;
-  expect(minFive.maxValue).toBeNull;
-  expect(positive.maxValue).toBeNull;
-  expect(nonnegative.maxValue).toBeNull;
-  expect(intNum.minValue).toBeNull;
-  expect(multipleOfFive.minValue).toBeNull;
-  expect(finite.minValue).toBeNull;
+  expect(z.number().maxValue).toBeNull();
+  expect(gtFive.maxValue).toBeNull();
+  expect(gteFive.maxValue).toBeNull();
+  expect(minFive.maxValue).toBeNull();
+  expect(positive.maxValue).toBeNull();
+  expect(nonnegative.maxValue).toBeNull();
+  expect(intNum.maxValue).toBeNull();
+  expect(multipleOfFive.maxValue).toBeNull();
+  expect(finite.maxValue).toBeNull();
   expect(ltFive.maxValue).toEqual(5);
   expect(lteFive.maxValue).toEqual(5);
   expect(maxFive.maxValue).toEqual(5);

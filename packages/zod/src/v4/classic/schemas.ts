@@ -1119,7 +1119,7 @@ export interface _ZodNumber<Internals extends core.$ZodNumberInternals = core.$Z
   max(value: number, params?: string | core.$ZodCheckLessThanParams): this;
   /** Consider `z.int()` instead. This API is considered *legacy*; it will never be removed but a better alternative exists. */
   int(params?: string | core.$ZodCheckNumberFormatParams): this;
-  /** @deprecated This is now identical to `.int()`. Only numbers in the safe integer range are accepted. */
+  /** @deprecated Use `.int()` instead. */
   safe(params?: string | core.$ZodCheckNumberFormatParams): this;
   positive(params?: string | core.$ZodCheckGreaterThanParams): this;
   nonnegative(params?: string | core.$ZodCheckGreaterThanParams): this;
@@ -1156,12 +1156,26 @@ export const ZodNumber: core.$constructor<ZodNumber> = /*@__PURE__*/ core.$const
   /*@__PURE__*/ util.derived<ZodNumber>(
     {
       minValue: (inst) => {
-        const { minimum, exclusiveMinimum } = processors.aggregateChecks<number>(inst);
-        return Math.max(minimum ?? Number.NEGATIVE_INFINITY, exclusiveMinimum ?? Number.NEGATIVE_INFINITY);
+        let minimum: number | null = null;
+        for (const check of inst._zod.def.checks ?? []) {
+          const def = check._zod.def;
+          if (def.check === "greater_than") {
+            const value = (def as core.$ZodCheckGreaterThanDef).value as number;
+            minimum = minimum === null ? value : Math.max(minimum, value);
+          }
+        }
+        return minimum;
       },
       maxValue: (inst) => {
-        const { maximum, exclusiveMaximum } = processors.aggregateChecks<number>(inst);
-        return Math.min(maximum ?? Number.POSITIVE_INFINITY, exclusiveMaximum ?? Number.POSITIVE_INFINITY);
+        let maximum: number | null = null;
+        for (const check of inst._zod.def.checks ?? []) {
+          const def = check._zod.def;
+          if (def.check === "less_than") {
+            const value = (def as core.$ZodCheckLessThanDef).value as number;
+            maximum = maximum === null ? value : Math.min(maximum, value);
+          }
+        }
+        return maximum;
       },
       isInt: (inst) => {
         const { isInt, multipleOf } = processors.aggregateChecks(inst);
@@ -1192,7 +1206,11 @@ export const ZodNumber: core.$constructor<ZodNumber> = /*@__PURE__*/ core.$const
         return this.check(int(params));
       },
       safe(params) {
-        return this.check(int(params));
+        return this.check(
+          int(params),
+          checks.gte(Number.MIN_SAFE_INTEGER, params as core.$ZodCheckGreaterThanParams),
+          checks.lte(Number.MAX_SAFE_INTEGER, params as core.$ZodCheckLessThanParams)
+        );
       },
       positive(params) {
         return this.check(checks.gt(0, params));

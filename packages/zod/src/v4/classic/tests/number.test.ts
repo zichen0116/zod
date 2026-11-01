@@ -284,18 +284,41 @@ test(".safe() validation", () => {
   expect(schema.parse(Number.MAX_SAFE_INTEGER)).toEqual(Number.MAX_SAFE_INTEGER);
   expect(() => schema.parse(Number.MIN_SAFE_INTEGER - 1)).toThrow();
   expect(() => schema.parse(Number.MAX_SAFE_INTEGER + 1)).toThrow();
+  expect(z.toJSONSchema(schema)).toEqual(z.toJSONSchema(z.number().int()));
+  for (const value of [
+    Number.MIN_SAFE_INTEGER - 1,
+    Number.MAX_SAFE_INTEGER + 1,
+    -1,
+    0,
+    1,
+    1.5,
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    "1",
+  ]) {
+    expect(schema.safeParse(value).success).toBe(z.number().int().safeParse(value).success);
+  }
+  for (const value of [Number.MIN_SAFE_INTEGER - 1, Number.MAX_SAFE_INTEGER + 1]) {
+    const result = schema.safeParse(value);
+    expect(result.error?.issues.map((issue) => issue.code)).toEqual(
+      value < 0 ? ["too_small", "too_small"] : ["too_big", "too_big"]
+    );
+  }
 });
 
 test("min value getters", () => {
-  expect(z.number().minValue).toBeNull;
-  expect(z.number().lt(5).minValue).toBeNull;
-  expect(z.number().lte(5).minValue).toBeNull;
-  expect(z.number().max(5).minValue).toBeNull;
-  expect(z.number().negative().minValue).toBeNull;
-  expect(z.number().nonpositive().minValue).toBeNull;
-  expect(z.number().int().minValue).toBeNull;
-  expect(z.number().multipleOf(5).minValue).toBeNull;
-  expect(z.number().finite().minValue).toBeNull;
+  expect(z.number().minValue).toBeNull();
+  expect(z.number().lt(5).minValue).toBeNull();
+  expect(z.number().lte(5).minValue).toBeNull();
+  expect(z.number().max(5).minValue).toBeNull();
+  expect(z.number().negative().minValue).toBeNull();
+  expect(z.number().nonpositive().minValue).toBeNull();
+  expect(z.number().int().minValue).toBeNull();
+  expect(z.int32().minValue).toBeNull();
+  expect(z.int32().min(Number.NEGATIVE_INFINITY).minValue).toBe(Number.NEGATIVE_INFINITY);
+  expect(z.number().min(10).gt(5).minValue).toBe(10);
+  expect(z.number().multipleOf(5).minValue).toBeNull();
+  expect(z.number().finite().minValue).toBeNull();
   expect(z.number().gt(5).minValue).toEqual(5);
   expect(z.number().gte(5).minValue).toEqual(5);
   expect(z.number().min(5).minValue).toEqual(5);
@@ -306,15 +329,18 @@ test("min value getters", () => {
 });
 
 test("max value getters", () => {
-  expect(z.number().maxValue).toBeNull;
-  expect(z.number().gt(5).maxValue).toBeNull;
-  expect(z.number().gte(5).maxValue).toBeNull;
-  expect(z.number().min(5).maxValue).toBeNull;
-  expect(z.number().positive().maxValue).toBeNull;
-  expect(z.number().nonnegative().maxValue).toBeNull;
-  expect(z.number().int().minValue).toBeNull;
-  expect(z.number().multipleOf(5).minValue).toBeNull;
-  expect(z.number().finite().minValue).toBeNull;
+  expect(z.number().maxValue).toBeNull();
+  expect(z.number().gt(5).maxValue).toBeNull();
+  expect(z.number().gte(5).maxValue).toBeNull();
+  expect(z.number().min(5).maxValue).toBeNull();
+  expect(z.number().positive().maxValue).toBeNull();
+  expect(z.number().nonnegative().maxValue).toBeNull();
+  expect(z.number().int().maxValue).toBeNull();
+  expect(z.int32().maxValue).toBeNull();
+  expect(z.int32().max(Number.POSITIVE_INFINITY).maxValue).toBe(Number.POSITIVE_INFINITY);
+  expect(z.number().max(1).lt(5).maxValue).toBe(1);
+  expect(z.number().multipleOf(5).maxValue).toBeNull();
+  expect(z.number().finite().maxValue).toBeNull();
   expect(z.number().lt(5).maxValue).toEqual(5);
   expect(z.number().lte(5).maxValue).toEqual(5);
   expect(z.number().max(5).maxValue).toEqual(5);
